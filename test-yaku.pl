@@ -61,8 +61,10 @@ test_all :-
 test1 :-
     Info = [
         [menzen, tsumo, ryanmen],
-        [[11], [45], [11, 23, 24]],
-        41, 42, 0, 1, 0
+        ([11], [45], [11, 23, 24]),
+        x,
+        (41, 42),
+        (0, 1, 0)
     ],
     findall([Yaku, Han], yaku(Info, Yaku, Han), Result),
     writeln(Result),
@@ -76,8 +78,10 @@ test1 :-
 test2 :-
     Info = [
         [riichi, menzen, tsumo],
-        [[11], [43], [22, 33, 34]],
-        43, 42, 0, 0, 1
+        ([11], [43], [22, 33, 34]),
+        x,
+        (43, 42),
+        (0, 0, 1)
     ],
     findall([Yaku, Han], yaku(Info, Yaku, Han), Result),
     writeln(Result),
@@ -92,8 +96,10 @@ test2 :-
 test3 :-
     Info = [
         [ippatsu, riichi],
-        [[15], [41, 42], [22, 33]],
-        43, 43, 0, 0, 0
+        ([15], [41, 42], [22, 33]),
+        x,
+        (43, 43),
+        (0, 0, 0)
     ],
     findall([Yaku, Han], yaku(Info, Yaku, Han), Result),
     writeln(Result),
@@ -106,11 +112,60 @@ test3 :-
 test4 :-
     Info = [
         [ryanmen, menzen],
-        [[11], [], [12, 22, 33, 34]],
-        41, 42, 0, 0, 0
+        ([11], [], [12, 22, 33, 34]),
+        x,
+        (41, 42),
+        (0, 0, 0)
     ],
     findall([Yaku, Han], yaku(Info, Yaku, Han), Result),
     writeln(Result),
     permutation(Result, [
         ['平和', 1]
+    ]).
+
+% 60. 国士無双
+test60 :-
+    Info = [
+        x,
+        x,
+        [11, 19, 21, 29, 31, 31, 39, 41, 42, 43, 44, 45, 46, 47],
+        (41, 42),
+        (0, 0, 0)
+    ],
+    findall([Yaku, Han], yaku(Info, Yaku, Han), Result),
+    writeln(Result),
+    permutation(Result, [
+        ['国士無双', -1]
+    ]).
+
+% 61. 九蓮宝燈
+test61 :-
+    Info = [
+        [menzen, no_kan],
+        x,
+        [11, 11, 11, 12, 13, 14, 15, 16, 16, 17, 18, 19, 19, 19],
+        (41, 42),
+        (0, 0, 0)
+    ],
+    findall([Yaku, Han], yaku(Info, Yaku, Han), Result),
+    writeln(Result),
+    permutation(Result, [
+        ['九蓮宝燈', -1]
+    ]).
+
+% 61. 九蓮宝燈
+test62 :-
+    Info = [
+        [menzen, no_kan],
+        x,
+        [11, 11, 11, 12, 13, 14, 15, 16, 16, 17, 18, 19, 19, Tile],
+        (41, 42),
+        (0, 0, 0)
+    ],
+    Yaku = '九蓮宝燈',
+    Han = -1,
+    findall(Tile, yaku(Info, Yaku, Han), Result),
+    writeln(Result),
+    permutation(Result, [
+        11, 11, 11, 12, 13, 14, 15, 16, 16, 17, 18, 19, 19
     ]).

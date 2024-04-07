@@ -135,23 +135,3 @@ extract_single([s, _], [First|Rest], [s, First], Tail) :-
     select_unique(Second, Rest, Rest1),
     Third is Second + 1,
     select_unique(Third, Rest1, Tail).
-
-% select_unique(+Element, +List, -Rest)
-%
-% true if Rest is the list after removing the first occurrence of Element.
-%
-% Element: an element
-% List: a list
-% Rest: a list
-%
-% e.g. select_unique(1, [1, 2, 3, 1, 4], Rest).
-% Rest = [2, 3, 1, 4].
-
-% Base case: the element is the head of the list.
-select_unique(Element, [Element|Rest], Rest).
-% Recursive case: the element is not the head of the list.
-% Notice that we force Element to be different from Head.
-% This is to ensure that we only remove the first occurrence of Element.
-select_unique(Element, [Head|Rest], [Head|Rest1]) :-
-    Head < Element,
-    select_unique(Element, Rest, Rest1).

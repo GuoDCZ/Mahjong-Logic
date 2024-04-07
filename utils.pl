@@ -12,9 +12,12 @@
         terminal_sequence/1,
         simple_sequence/1,
         tile_suit/2,
+        tile_number/2,
         % Hand
         hand/1,
-        hand_sort/2
+        hand_sort/2,
+        % List
+        select_unique/3
     ]
 ).
 
@@ -30,8 +33,7 @@
 % e.g. tile(11).
 
 tile(Tile) :-
-    between(11, 47, Tile),
-    Tile mod 10 =\= 0.
+    (number_tile(Tile); honor_tile(Tile)).
 
 % number_tile(+Tile).
 %
@@ -39,24 +41,23 @@ tile(Tile) :-
 %
 % Tile: a valid tile.
 number_tile(Tile) :- 
-    Tile < 40.
+    (simple_tile(Tile); terminal_tile(Tile)).
 
 % honor_tile(+Tile).
 %
 % true if Tile is an honor tile.
 %
 % Tile: a valid tile.
-honor_tile(Tile) :- 
-    \+ number_tile(Tile).
+honor_tile(Tile) :-
+    between(41, 47, Tile).
 
 % terminal_tile(+Tile).
 %
 % true if Tile is a terminal (number 1 or 9) tile.
 %
 % Tiles: an integer representing a tile.
-terminal_tile(Tile) :- 
-    number_tile(Tile),
-    (Tile mod 10 =:= 1; Tile mod 10 =:= 9).
+terminal_tile(Tile) :-
+    member(Tile, [11, 19, 21, 29, 31, 39]).
 
 % terminal_or_honor_tile(+Tile).
 %
@@ -72,24 +73,23 @@ terminal_or_honor_tile(Tile) :-
 %
 % Tile: a valid tile.
 simple_tile(Tile) :-
-    \+ terminal_or_honor_tile(Tile).
+    (between(12, 18, Tile); between(22, 28, Tile); between(32, 38, Tile)).
 
 % terminal_sequence(+Tile).
 %
 % true if sequence represented by Tile is a terminal sequence.
 %
 % Tiles: a tile representing a sequence.
-terminal_sequence(Tile) :- 
-    number_tile(Tile),
-    (Tile mod 10 =:= 1; Tile mod 10 =:= 7).
+terminal_sequence(Tile) :-
+    member(Tile, [11, 17, 21, 27, 31, 37]).
 
 % simple_sequence(+Tile).
 %
 % true if sequence represented by Tile is a simple sequence.
 %
 % Tiles: a valid tile representing a valid sequence.
-simple_sequence(Tile) :- 
-    \+ terminal_sequence(Tile).
+simple_sequence(Tile) :-
+    (between(12, 16, Tile); between(22, 26, Tile); between(32, 36, Tile)).
 
 % suit(+Suit)
 %
@@ -107,8 +107,16 @@ suit(Suit) :-
 % Tile: a valid number tile.
 % Suit: a valid suit.
 %
-tile_suit(Tile, Suit) :-
-    Suit is Tile // 10.
+tile_suit(Tile, Suit) :- Suit is Tile // 10.
+
+% tile_number(+Tile, -Number)
+%
+% true if Number is the number of Tile.
+%
+% Tile: a valid number tile.
+% Number: an integer
+%
+tile_number(Tile, Number) :- Number is Tile mod 10.
 
 
 % ======= HAND =======
@@ -164,3 +172,25 @@ has_fifth_tile([_|Rest]) :-
 
 hand_sort(Hand, SortedHand) :-
     msort(Hand, SortedHand).
+
+% ======= LIST =======
+
+% select_unique(+Element, +List, -Rest)
+%
+% true if Rest is the list after removing the first occurrence of Element.
+%
+% Element: an element
+% List: a list
+% Rest: a list
+%
+% e.g. select_unique(1, [1, 2, 3, 1, 4], Rest).
+% Rest = [2, 3, 1, 4].
+
+% Base case: the element is the head of the list.
+select_unique(Element, [Element|Rest], Rest).
+% Recursive case: the element is not the head of the list.
+% Notice that we force Element to be different from Head.
+% This is to ensure that we only remove the first occurrence of Element.
+select_unique(Element, [Head|Rest], [Head|Rest1]) :-
+    select_unique(Element, Rest, Rest1),
+    Head < Element.
