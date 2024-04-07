@@ -1,0 +1,10 @@
+"filename", "language", "Prolog", "Markdown", "comment", "blank", "total"
+"/home/guodcz/Documents/riichi_mahjong/.mahjong_backup.pl", "Prolog", 48, 0, 55, 24, 127
+"/home/guodcz/Documents/riichi_mahjong/README.md", "Markdown", 0, 4, 0, 4, 8
+"/home/guodcz/Documents/riichi_mahjong/group.pl", "Prolog", 0, 0, 0, 1, 1
+"/home/guodcz/Documents/riichi_mahjong/mahjong.pl", "Prolog", 33, 0, 108, 17, 158
+"/home/guodcz/Documents/riichi_mahjong/score.pl", "Prolog", 131, 0, 28, 6, 165
+"/home/guodcz/Documents/riichi_mahjong/settle.pl", "Prolog", 0, 0, 46, 3, 49
+"/home/guodcz/Documents/riichi_mahjong/utils.pl", "Prolog", 45, 0, 80, 21, 146
+"/home/guodcz/Documents/riichi_mahjong/yaku.pl", "Prolog", 155, 0, 144, 58, 357
+"Total", "-", 412, 4, 461, 134, 1011

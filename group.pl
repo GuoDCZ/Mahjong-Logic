@@ -1,7 +1,10 @@
+:- module(group, [group/2]).
+:- use_module(utils).
+
 % Tiles are represented by integers.
 % 11-19: Characters
-% 21-29: Dots
-% 31-39: Bamboos
+% 21-29: Bamboos
+% 31-39: Dots
 % 41-47: Winds and Dragons
 % other notation:
 % 60: Draw & Discard
@@ -12,70 +15,7 @@
 % "434343m43": Open Kan 43 From Right
 % ... and so on
 
-% tile(Tile)
-% 
-% true if Tile is a valid tile.
-% A valid tile is an integer between 11 and 47, excluding 20, 30, and 40.
-% 
-% Tile: an integer
-% 
-% e.g. tile(11).
 
-tile(Tile) :-
-    between(11, 47, Tile),
-    Tile mod 10 =\= 0.
-
-% hand(Hand)
-%
-% true if Hand is a valid hand.
-% A valid hand is a list of 14 valid tiles.
-% A valid hand must not contain five identical tiles.
-%
-% Hand: a list of 14 integers
-%
-% e.g. hand([11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25]).
-
-hand(Hand) :-
-    maplist(tile, Hand),
-    length(Hand, 14),
-    check_no_fifth_tile(Hand).
-
-% check_no_fifth_tile(+Hand)
-%
-% true if Hand does not contain five identical tiles.
-%
-% Hand: a list of valid tiles
-%
-% e.g. check_no_fifth_tile([11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25]).
-
-check_no_fifth_tile(Hand) :-
-    hand_sort(Hand, SortedHand),
-    \+ has_fifth_tile(SortedHand).
-
-% has_fifth_tile(+SortedHand)
-%
-% true if SortedHand contains five identical tiles.
-%
-% SortedHand: a sorted list of valid tiles
-%
-% e.g. has_fifth_tile([11, 11, 11, 11, 11, 12, 13, 14, 15, 16, 17, 18, 19, 21]).
-
-has_fifth_tile([Head, Head, Head, Head, Head|_]).
-has_fifth_tile([_|Rest]) :-
-    has_fifth_tile(Rest).
-
-% hand_sort(+Hand, -SortedHand)
-%
-% true if SortedHand is a sorted version of Hand.
-%
-% Hand: a list of valid tiles
-% SortedHand: a sorted list of valid tiles
-%
-% e.g. hand_sort([11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25], SortedHand).
-% SortedHand = [11, 12, 13, 14, 15, 16, 17, 18, 19, 21, 22, 23, 24, 25].
-
-hand_sort(Hand, SortedHand) :-
-    msort(Hand, SortedHand).
 
 % group(+Hand, -Groups)
 %
@@ -100,7 +40,7 @@ hand_sort(Hand, SortedHand) :-
 group(Hand, Groups) :-
     hand(Hand),
     hand_sort(Hand, SortedHand),
-    group_helper([_, 1], SortedHand, Groups).
+    group_helper([_, 1], SortedHand, Groups, "").
 
 % group_helper(?State, +SortedHand, -Groups)
 %
@@ -120,13 +60,15 @@ group(Hand, Groups) :-
 % Groups = [[p, 11], [t, 12]].
 
 % Base case: 0 more groups to extract.
-group_helper([s, 0], [], []).
+group_helper([s, 0], [], [], _Indent).
 % Recursive case: extract a group and continue extracting.
-group_helper(State, Hand, [Group|Groups]) :-
+group_helper(State, Hand, [Group|Groups], Indent) :-
     extract_single(State, Hand, Group, Rest),
+    write(Indent), writeln([Group, Rest]),   % Debugging
+    atom_concat(Indent, "  ", NextIndent),   % Debugging
     mark_pair_found(State, NextState),
     mark_next_search(State, NextState, Hand, Rest),
-    group_helper(NextState, Rest, Groups).
+    group_helper(NextState, Rest, Groups, NextIndent).
 
 % mark_pair_found(+State, -NextState)
 %
@@ -211,5 +153,5 @@ select_unique(Element, [Element|Rest], Rest).
 % Notice that we force Element to be different from Head.
 % This is to ensure that we only remove the first occurrence of Element.
 select_unique(Element, [Head|Rest], [Head|Rest1]) :-
-    Head \= Element,
+    Head < Element,
     select_unique(Element, Rest, Rest1).
