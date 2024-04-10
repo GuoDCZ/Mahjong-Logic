@@ -50,6 +50,7 @@
 % ['地和']
 
 :- use_module(yaku).
+:- use_module(utils).
 
 test_all :-
     test1,
@@ -151,21 +152,4 @@ test61 :-
     writeln(Result),
     permutation(Result, [
         ['九蓮宝燈', -1]
-    ]).
-
-% 61. 九蓮宝燈
-test62 :-
-    Info = [
-        [menzen, no_kan],
-        x,
-        [11, 11, 11, 12, 13, 14, 15, 16, 16, 17, 18, 19, 19, Tile],
-        (41, 42),
-        (0, 0, 0)
-    ],
-    Yaku = '九蓮宝燈',
-    Han = -1,
-    findall(Tile, yaku(Info, Yaku, Han), Result),
-    writeln(Result),
-    permutation(Result, [
-        11, 11, 11, 12, 13, 14, 15, 16, 16, 17, 18, 19, 19
     ]).

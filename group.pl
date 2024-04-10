@@ -39,7 +39,7 @@
 
 group(Hand, Groups) :-
     hand(Hand),
-    hand_sort(Hand, SortedHand),
+    sort_tiles(Hand, SortedHand),
     group_helper([_, 1], SortedHand, Groups, "").
 
 % group_helper(?State, +SortedHand, -Groups)

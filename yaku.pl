@@ -129,8 +129,8 @@ yaku(Info, Yaku, Han) :-
 yaku_yakuman([Flags|_], '天和') :- member(tenhou, Flags).
 yaku_yakuman([Flags|_], '地和') :- member(chiihou, Flags).
 yaku_yakuman([_, _, Tiles|_], '国士無双') :-
-    select_unique(_, Tiles, WaitHand),
-    kokushi_wait(WaitHand).
+    kokushi_wait(WaitHand),
+    remove_tile(_, Tiles, WaitHand).
 yaku_yakuman([Flags|_], '四暗刻') :- member(suuankou, Flags).
 yaku_yakuman([_, ([_], Triplets, _)|_], '大三元') :- 
     sublist([45, 46, 47], Triplets).
@@ -142,7 +142,7 @@ yaku_yakuman([_, (Pairs, Triplets, [])|_], '字一色') :-
     maplist(honor_tile, Triplets),
     maplist(honor_tile, Pairs).
 yaku_yakuman([_, ([Pair], Triplets, _)|_], '小四喜') :- 
-    merge([Pair], Triplets, Sorted),
+    insert_tile(Pair, Triplets, Sorted),
     sublist([41, 42, 43, 44], Sorted),
     Triplets =\= [41, 42, 43, 44]. % incompatible with 大四喜
 yaku_yakuman([_, ([_], [41, 42, 43, 44], [])|_], '大四喜').
@@ -153,8 +153,8 @@ yaku_yakuman([Flags|_], '四槓子') :- member(suukantsu, Flags).
 yaku_yakuman([Flags, _, Tiles|_], '九蓮宝燈') :-
     member(menzen, Flags),
     member(no_kan, Flags),
-    select_unique(_, Tiles, WaitHand),
-    chuuren_wait(WaitHand).
+    chuuren_wait(WaitHand),
+    remove_tile(_, Tiles, WaitHand).
 
 % ======= YAKU NORMAL =======
 
@@ -223,7 +223,7 @@ yaku_group(([_], Triplets, _), '三色同刻', 2) :-
     sublist([X, Y, Z], Triplets),
     three_color_tiles(X, Y, Z).
 yaku_group(([Pair], Triplets, _), '小三元', 2) :-
-    merge([Pair], Triplets, Sorted),
+    insert_tile(Pair, Triplets, Sorted),
     sublist([45, 46, 47], Sorted).
 yaku_group((Pairs, Triplets, []), '混老頭', 2) :- 
     maplist(terminal_or_honor_tile, Pairs),
@@ -283,20 +283,6 @@ yaku_dora((_, _, UraDora), '裏ドラ', UraDora) :- UraDora =\= 0.
 
 % ====== UTILITY PREDICATES ======
 
-% merge(+List1, +List2, -Merged).
-%
-% Merged is the merged ascending list of List1 and List2.
-%
-% List1, List2: lists of tiles in ascending order.
-merge([], List, List).
-merge(List, [], List).
-merge([Head1|Tail1], [Head2|Tail2], [Head1|Tail]) :- 
-    Head1 =< Head2,
-    merge(Tail1, [Head2|Tail2], Tail).
-merge([Head1|Tail1], [Head2|Tail2], [Head2|Tail]) :-
-    Head1 > Head2,
-    merge([Head1|Tail1], Tail2, Tail).
-
 % one_pair(+Tiles).
 %
 % true if Tiles contains exactly one pair of identical tiles.
@@ -354,7 +340,7 @@ green_sequence(22).
 half_flush([]).
 half_flush(Tiles) :-
     last(Tiles, HonorLast),
-    tile_suit(HonorLast, 4),
+    tile_suit(4, HonorLast),
     exclude(honor_tile, Tiles, NumberTiles),
     full_flush(NumberTiles).
 
@@ -366,9 +352,9 @@ half_flush(Tiles) :-
 full_flush([]).
 full_flush(Tiles) :-
     Tiles = [First|_],
-    tile_suit(First, Suit),
+    tile_suit(Suit, First),
     last(Tiles, Last),
-    tile_suit(Last, Suit).
+    tile_suit(Suit, Last).
 
 % kokushi_wait(+WaitHand).
 %
