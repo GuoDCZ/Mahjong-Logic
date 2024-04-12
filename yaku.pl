@@ -69,7 +69,7 @@
 :- use_module(group).
 :- use_module(utils).
 
-% yaku(+Info, -Yaku, -Han)
+% yaku(+Info, ?Yaku, ?Han)
 %
 % true if Yaku is a Yaku in the hand defined by Info.
 %
@@ -106,20 +106,12 @@
 %       - Dora = (Dora, AkaDora, UraDora)
 %           - *Dora: the number of *Dora.
 %
-% Yaku: the name of the Yaku.
-% Han: the number of Han of the Yaku
-
-% ======= YAKU =======
-%
 % Note: no normal yaku will be checked if a yakuman is found.
-%
 yaku(Info, Yaku, -1) :-
     yaku_yakuman(Info, Yaku).
 yaku(Info, Yaku, Han) :-
     \+ yaku_yakuman(Info, _),
     yaku_normal(Info, Yaku, Han).
-
-% ======= YAKUMAN PREDICATES =======
 
 % yaku_yakuman(+Info, +Flags, -Yaku)
 % Info = [Flags, Group, Hand, _, _]
@@ -155,8 +147,6 @@ yaku_yakuman([Flags, _, Tiles|_], '九蓮宝燈') :-
     member(no_kan, Flags),
     chuuren_wait(WaitHand),
     remove_tile(_, Tiles, WaitHand).
-
-% ======= YAKU NORMAL =======
 
 % yaku_normal(+Info, -Yaku, -Han)
 %
@@ -195,8 +185,6 @@ yaku_normal([_, ([_], Triplets, _), _, Wind|_], Yaku, Han) :-
 yaku_normal([_, _, _, _, Dora], Yaku, Han) :- 
     yaku_dora(Dora, Yaku, Han).
 
-% ======= YAKU PREDICATES =======
-
 % yaku_flags(+Flags, -Yaku, -Han)
 yaku_flags(Flags, '門前清自摸和', 1) :-
     member(menzen, Flags),
@@ -233,7 +221,7 @@ yaku_group((Pairs, Triplets, []), '混老頭', 2) :-
 % Group = (Pairs, Triplets, Sequences)
 yaku_peikou(([_], _, Sequences), '一盃口', 1) :- 
     one_pair(Sequences),
-    Sequences =\= [X, X, Y, Y]. % incompatible with 二盃口
+    Sequences \= [X, X, Y, Y]. % incompatible with 二盃口
 yaku_peikou(([_], [], [X, X, Y, Y]), '二盃口', 3).
 
 % yaku_sequence(+Group, -Yaku, -Han)
@@ -248,7 +236,7 @@ yaku_sequence(([Pair], Triplets, Sequences), '全帯幺九', 2) :-
     terminal_or_honor_tile(Pair),
     maplist(terminal_or_honor_tile, Triplets),
     maplist(terminal_sequence, Sequences),
-    Sequences =\= [], % incompatible with 混老頭
+    Sequences \= [], % incompatible with 混老頭
     \+ maplist(terminal_tile, [Pair|Triplets]). % incompatible with 純全帯幺九
 yaku_sequence(([Pair], Triplets, Sequences), '純全帯幺九', 3) :-
     terminal_tile(Pair),
@@ -283,11 +271,9 @@ yaku_dora((_, _, UraDora), '裏ドラ', UraDora) :- UraDora =\= 0.
 
 % ====== UTILITY PREDICATES ======
 
-% one_pair(+Tiles).
+% one_pair(+SortedTiles).
 %
 % true if Tiles contains exactly one pair of identical tiles.
-% 
-% Tiles: a list of Sorted tiles.
 one_pair([X, X|_]).
 one_pair([X, Y|T]) :- 
     X \= Y,
@@ -296,26 +282,21 @@ one_pair([X, Y|T]) :-
 % lose_1_han_if_open(+Flags, +Han, -NewHan).
 %
 % NewHan is Han - 1 if the hand is open.
-%
-% Flags: a list of flags that indicate the state of the player.
 lose_1_han_if_open(Flags, Han, Han) :- 
     member(menzen, Flags).
 lose_1_han_if_open(Flags, Han, NewHan) :- 
     \+ member(menzen, Flags),
     NewHan is Han - 1.
 
-% sublists(?Sublist, ?List).
+% sublists(?Sublist, +List).
 %
 % true if Sublist is List with some elements removed.
-% The order is preserved.
-%
-% Sublist, List: lists of tiles in ascending order.
 sublist([], _).
 sublist([Head|TailSub], [Head|Tail]) :-
     sublist(TailSub, Tail).
 sublist([HeadSub|TailSub], [Head|Tail]) :-
     sublist([HeadSub|TailSub], Tail),
-    Head < HeadSub.
+    HeadSub \= Head.
 
 % green_tile(+Tile).
 % green_sequence(+Sequence).
